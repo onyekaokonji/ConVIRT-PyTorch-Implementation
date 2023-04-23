@@ -33,60 +33,58 @@ class Model():
         train_loss = 0.0
         validation_loss = 0.0
 
-        print(next(iter(train_ds))[1].shape)
+        for epoch in range(1, self.config["n_epochs"]+1):
 
-        # for epoch in range(1, self.config["n_epochs"]+1):
+            for image, text in train_ds:
 
-        #     for image, text in train_ds:
+                image = image.to(self.device)
+                text = text.to(self.device)
 
-        #         image = image.to(self.device)
-        #         text = text.to(self.device)
+                image_vector = i_e(image)
+                text_vector = t_e(list(text))
 
-        #         image_vector = i_e(image)
-        #         text_vector = t_e(list(text))
+                optimizer = torch.optim.Adam(i_e.parameters())
 
-        #         optimizer = torch.optim.Adam(i_e.parameters())
+                optimizer.zero_grad()
 
-        #         optimizer.zero_grad()
-
-        #         loss = total_loss(batch_size=self.config["batch_size"],
-        #                           loss_weight=self.config["loss_weight"],
-        #                           temperature=self.config["temperature"],
-        #                           image_vector=image_vector,
-        #                           text_vector=text_vector)
+                loss = total_loss(batch_size=self.config["batch_size"],
+                                  loss_weight=self.config["loss_weight"],
+                                  temperature=self.config["temperature"],
+                                  image_vector=image_vector,
+                                  text_vector=text_vector)
                 
-        #         loss.backward()
+                loss.backward()
 
-        #         optimizer.step()
+                optimizer.step()
 
-        #         with torch.no_grad():
+                with torch.no_grad():
 
-        #             i_e.eval()
-        #             t_e.eval()
+                    i_e.eval()
+                    t_e.eval()
 
-        #             for valid_image, valid_text in valid_ds:
+                    for valid_image, valid_text in valid_ds:
 
-        #                 valid_image = valid_image.to(self.device)
-        #                 valid_text = valid_text.to(self.device)
+                        valid_image = valid_image.to(self.device)
+                        valid_text = valid_text.to(self.device)
 
-        #                 valid_image_vector = i_e(valid_image)
-        #                 valid_text_vector = t_e(list(valid_text))
+                        valid_image_vector = i_e(valid_image)
+                        valid_text_vector = t_e(list(valid_text))
 
-        #                 vloss = total_loss(batch_size=self.config["batch_size"],
-        #                                    loss_weight=self.config["loss_weight"],
-        #                                     temperature=self.config["temperature"],
-        #                                     image_vector=valid_image_vector,
-        #                                     text_vector=valid_text_vector)
+                        vloss = total_loss(batch_size=self.config["batch_size"],
+                                           loss_weight=self.config["loss_weight"],
+                                            temperature=self.config["temperature"],
+                                            image_vector=valid_image_vector,
+                                            text_vector=valid_text_vector)
                         
-        #                 vloss.backward()
+                        vloss.backward()
 
-        #                 validation_loss += vloss.item()
+                        validation_loss += vloss.item()
 
                 
-        #         train_loss += loss.item()
+                train_loss += loss.item()
 
-        #         print(f"Epoch: {epoch} Training Loss: {train_loss/len(train_ds)}")
-        #         print(f"Epoch: {epoch} Validation Loss: {train_loss/len(valid_ds)}")
+                print(f"Epoch: {epoch} Training Loss: {train_loss/len(train_ds)}")
+                print(f"Epoch: {epoch} Validation Loss: {train_loss/len(valid_ds)}")
 
 
 
