@@ -1,2 +1,5 @@
 # ConVIRT-PyTorch-Implementation
-ConVIRT uses contrastive learning for learning medical image representations using pairs of images and text.
+
+A Pytorch implementation of the paper (Contrastive Learning of Medical Visual Representations from Paired Images and Text)[https://arxiv.org/abs/2010.00747].
+
+To test, first run: pip install requirements.txt
