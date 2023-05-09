@@ -1,13 +1,11 @@
 import os
 
+import pandas as pd
 import torch
 import torch.nn as nn
+from PIL import Image
 from torch.utils.data import Dataset
 from torchvision.transforms import *
-
-from PIL import Image
-import pandas as pd
-
 
 transforms = Compose([
         RandomResizedCrop(size = 256, scale = (0.6, 1.0)),
@@ -22,20 +20,26 @@ transforms = Compose([
 
 
 class CheXpert(Dataset):
+    """ Dataset for training based on CheXpert"""
 
-  def __init__(self, img_dir, dataframe, transform = False):
-    self.img_dir = img_dir
-    self.transform = transform
-    self.dataframe = pd.read_csv(dataframe)
+  def __init__(
+      self, 
+      root_dir : str, # path to the root directory
+      dataframe : str, #pandas dataframe with image paths and text labels
+      transform = False #transformations to tbe applied pre-projection
+      ):
+     self.root_dir = root_dir
+     self.transform = transform
+     self.dataframe = pd.read_csv(dataframe)
 
   
   def __len__(self):
-    return len(self.dataframe)
+     # Obtain length of dataset
+     return len(self.dataframe)
   
-  def __getitem__(self, idx):
+  def __getitem__(self, idx: int):
     # Get image
-    root_dir = 'ConVIRT'
-    img = os.path.join(root_dir, self.dataframe.loc[idx, "Path"])
+    img = os.path.join(self.root_dir, self.dataframe.loc[idx, "Path"])
     img = Image.open(img)
     
     if img.mode != "RGB":
