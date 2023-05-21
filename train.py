@@ -32,79 +32,81 @@ class Model:
         i_e = image_encoder()
         t_e = text_encoder()
         train_dataset = CheXpert(
-            self.train_image_dir, self.training_dataframe, transform=transforms
+            csv_file = self.training_dataframe
         )
 
         validation_dataset = CheXpert(
-            self.validation_image_dir, self.validation_dataframe, transform=transforms
+            csv_file = self.validation_dataframe
         )
 
         train_ds = DataLoader(train_dataset, batch_size=16)
 
         valid_ds = DataLoader(validation_dataset, batch_size=16)
 
-        train_loss = 0.0
-        validation_loss = 0.0
+        print(next(iter(train_ds))[0])
 
-        for epoch in range(1, self.config["n_epochs"] + 1):
-            for image, text in train_ds:
-                image = image.to(self.device)
-                text = text.to(self.device)
+#         train_loss = 0.0
+#         validation_loss = 0.0
 
-                image_vector = i_e(image)
-                text_vector = t_e(list(text))
+#         for epoch in range(1, self.config["n_epochs"] + 1):
+#             for image, text in train_ds:
+#                 image = image.to(self.device)
+#                 text = text.to(self.device)
 
-                optimizer = torch.optim.Adam(i_e.parameters())
+#                 image_vector = i_e(image)
+#                 text_vector = t_e(list(text))
 
-                optimizer.zero_grad()
+#                 optimizer = torch.optim.Adam(i_e.parameters())
 
-                loss = total_loss(
-                    batch_size=self.config["batch_size"],
-                    loss_weight=self.config["loss_weight"],
-                    temperature=self.config["temperature"],
-                    image_vector=image_vector,
-                    text_vector=text_vector,
-                )
+#                 optimizer.zero_grad()
 
-                loss.backward()
+#                 loss = total_loss(
+#                     batch_size=self.config["batch_size"],
+#                     loss_weight=self.config["loss_weight"],
+#                     temperature=self.config["temperature"],
+#                     image_vector=image_vector,
+#                     text_vector=text_vector,
+#                 )
 
-                optimizer.step()
+#                 loss.backward()
 
-                with torch.no_grad():
-                    i_e.eval()
-                    t_e.eval()
+#                 optimizer.step()
 
-                    for valid_image, valid_text in valid_ds:
-                        valid_image = valid_image.to(self.device)
-                        valid_text = valid_text.to(self.device)
+#                 with torch.no_grad():
+#                     i_e.eval()
+#                     t_e.eval()
 
-                        valid_image_vector = i_e(valid_image)
-                        valid_text_vector = t_e(list(valid_text))
+#                     for valid_image, valid_text in valid_ds:
+#                         valid_image = valid_image.to(self.device)
+#                         valid_text = valid_text.to(self.device)
 
-                        vloss = total_loss(
-                            batch_size=self.config["batch_size"],
-                            loss_weight=self.config["loss_weight"],
-                            temperature=self.config["temperature"],
-                            image_vector=valid_image_vector,
-                            text_vector=valid_text_vector,
-                        )
+#                         valid_image_vector = i_e(valid_image)
+#                         valid_text_vector = t_e(list(valid_text))
 
-                        vloss.backward()
+#                         vloss = total_loss(
+#                             batch_size=self.config["batch_size"],
+#                             loss_weight=self.config["loss_weight"],
+#                             temperature=self.config["temperature"],
+#                             image_vector=valid_image_vector,
+#                             text_vector=valid_text_vector,
+#                         )
 
-                        validation_loss += vloss.item()
+#                         vloss.backward()
 
-                train_loss += loss.item()
+#                         validation_loss += vloss.item()
 
-                print(f"Epoch: {epoch} Training Loss: {train_loss/len(train_ds)}")
-                print(f"Epoch: {epoch} Validation Loss: {train_loss/len(valid_ds)}")
+#                 train_loss += loss.item()
+
+#                 print(f"Epoch: {epoch} Training Loss: {train_loss/len(train_ds)}")
+#                 print(f"Epoch: {epoch} Validation Loss: {train_loss/len(valid_ds)}")
 
 
-if __name__ == "__main__":
-    model = Model(
-        "final_train.csv",
-        "final_valid.csv",
-        "CheXpert-v1.0-small/train",
-        "CheXpert-v1.0-small/valid",
-        "config.yaml",
-    )
-    model.core()
+# if __name__ == "__main__":
+#     model = Model(
+#         "final_train.csv",
+#         "final_valid.csv",
+#         "CheXpert-v1.0-small/train",
+#         "CheXpert-v1.0-small/valid",
+#         "config.yaml",
+#     )
+#     model.core()
